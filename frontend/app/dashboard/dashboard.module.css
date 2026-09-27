@@ -347,3 +347,69 @@
   border: none;
   color: white;
 }
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 22px 0 12px;
+  color: var(--ink);
+}
+
+.activitiesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 760px) {
+  .activitiesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.activityCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.activityPrompt {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.genBadge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-top: 10px;
+  display: block;
+}
+
+.secondaryBtn {
+  background: var(--periwinkle);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tableScroll {
+  max-height: 340px;
+  overflow-y: auto;
+}

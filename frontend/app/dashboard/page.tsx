@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./dashboard.module.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const DEMO_SESSION_ID = 1; // the seeded "completed" session from app/db/seed.py
 
 // Shown immediately and used as a fallback if the backend isn't reachable,
 // so the UI never shows a blank/broken screen during a live demo.
@@ -42,17 +43,25 @@ const pillClass: Record<string, string> = {
 
 type StudentRow = { student_id: number; name: string; level: string; avg_score: number | null };
 type Counts = Record<string, number>;
+type Activity = { level: string; title: string; prompt: string; generated_by?: string };
+type SessionInfo = { topic: string; subject: string; duration_minutes: number };
 
 export default function DashboardPage() {
   const [students, setStudents] = useState<StudentRow[]>(FALLBACK_STUDENTS);
   const [counts, setCounts] = useState<Counts>(FALLBACK_COUNTS);
   const [connected, setConnected] = useState(false);
 
+  const [session, setSession] = useState<SessionInfo | null>(null);
+
   const [recommendation, setRecommendation] = useState(
     "3 students are ready to move from like to unlike fraction addition. 3 students need another visual-first pass on the core concept before advancing."
   );
-  const [generatedBy, setGeneratedBy] = useState<string | null>(null);
+  const [recoGeneratedBy, setRecoGeneratedBy] = useState<string | null>(null);
   const [loadingReco, setLoadingReco] = useState(false);
+
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [lessonGeneratedBy, setLessonGeneratedBy] = useState<string | null>(null);
+  const [loadingLesson, setLoadingLesson] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/api/classes/1/analysis`)
@@ -61,26 +70,52 @@ export default function DashboardPage() {
         return res.json();
       })
       .then((data) => {
-        setStudents(data.students.slice(0, 4));
+        setStudents(data.students);
         setCounts(data.level_counts);
         setConnected(true);
       })
       .catch(() => setConnected(false));
+
+    fetch(`${API_URL}/api/sessions/${DEMO_SESSION_ID}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("not ok");
+        return res.json();
+      })
+      .then((data) =>
+        setSession({ topic: data.topic, subject: data.subject, duration_minutes: data.duration_minutes })
+      )
+      .catch(() => {});
   }, []);
 
   async function handleGenerateRecommendation() {
     setLoadingReco(true);
     try {
-      const res = await fetch(`${API_URL}/api/sessions/1/recommendation`, { method: "POST" });
+      const res = await fetch(`${API_URL}/api/sessions/${DEMO_SESSION_ID}/recommendation`, { method: "POST" });
       if (!res.ok) throw new Error("not ok");
       const data = await res.json();
       setRecommendation(data.recommendation);
-      setGeneratedBy(data.generated_by);
+      setRecoGeneratedBy(data.generated_by);
       setConnected(true);
     } catch {
-      setGeneratedBy("unavailable");
+      setRecoGeneratedBy("unavailable");
     } finally {
       setLoadingReco(false);
+    }
+  }
+
+  async function handleGenerateLesson() {
+    setLoadingLesson(true);
+    try {
+      const res = await fetch(`${API_URL}/api/sessions/${DEMO_SESSION_ID}/generate-lesson`, { method: "POST" });
+      if (!res.ok) throw new Error("not ok");
+      const data = await res.json();
+      setActivities(data.activities.map((a: any) => a.content ?? a));
+      setLessonGeneratedBy(data.generated_by);
+      setConnected(true);
+    } catch {
+      setLessonGeneratedBy("unavailable");
+    } finally {
+      setLoadingLesson(false);
     }
   }
 
@@ -113,12 +148,25 @@ export default function DashboardPage() {
         <div className={styles.gridTop}>
           <div className={styles.card}>
             <div className={styles.cardLabel}>Today&apos;s Session</div>
-            <div className={styles.sessionTopic}>Adding Like Fractions</div>
-            <div className={styles.sessionMeta}>45 min · Differentiated across 3 levels</div>
-            <span className={styles.badgeProgress}>Lesson plan ready</span>
+            <div className={styles.sessionTopic}>{session?.topic ?? "Adding Like Fractions"}</div>
+            <div className={styles.sessionMeta}>
+              {session?.duration_minutes ?? 45} min · Differentiated across 3 levels
+            </div>
+            <span className={styles.badgeProgress}>
+              {activities.length > 0 ? "Lesson generated" : "Lesson plan ready"}
+            </span>
             <div className={styles.progressBar}>
               <div className={styles.progressBarFill} />
             </div>
+            <button className={styles.secondaryBtn} onClick={handleGenerateLesson} disabled={loadingLesson}>
+              {loadingLesson ? "Generating…" : "Generate lesson"}
+            </button>
+            {lessonGeneratedBy && lessonGeneratedBy !== "unavailable" && (
+              <span className={styles.genBadge}>generated by: {lessonGeneratedBy}</span>
+            )}
+            {lessonGeneratedBy === "unavailable" && (
+              <span className={styles.genBadge}>backend unreachable</span>
+            )}
           </div>
           <div className={styles.card}>
             <div className={styles.cardLabel}>Avg. Score</div>
@@ -131,6 +179,25 @@ export default function DashboardPage() {
             <div className={styles.statLabel}>Since this term began</div>
           </div>
         </div>
+
+        {activities.length > 0 && (
+          <>
+            <div className={styles.sectionTitle}>Differentiated Activities</div>
+            <div className={styles.activitiesGrid} style={{ marginBottom: 18 }}>
+              {activities.map((a) => (
+                <div key={a.level} className={styles.activityCard}>
+                  <span className={`${styles.tag} ${tagClass[a.level] || ""}`}>
+                    {levelKey[a.level] || a.level}
+                  </span>
+                  <div className={styles.sessionTopic} style={{ fontSize: 14, marginTop: 8 }}>
+                    {a.title}
+                  </div>
+                  <div className={styles.activityPrompt}>{a.prompt}</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className={styles.card} style={{ marginBottom: 18 }}>
           <div className={styles.cardLabel}>Class Level Breakdown</div>
@@ -147,33 +214,35 @@ export default function DashboardPage() {
         <div className={styles.gridBottom}>
           <div className={styles.card}>
             <div className={styles.cardLabel}>Student Progress</div>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Student</th>
-                  <th>Level</th>
-                  <th>Avg Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((s) => (
-                  <tr key={s.student_id}>
-                    <td>
-                      <div className={styles.studentName}>
-                        <span className={`${styles.dot} ${dotClass[s.level] || ""}`} />
-                        {s.name}
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`${styles.tag} ${tagClass[s.level] || ""}`}>
-                        {levelKey[s.level] || s.level}
-                      </span>
-                    </td>
-                    <td>{s.avg_score != null ? `${Math.round(s.avg_score * 100)}%` : "—"}</td>
+            <div className={styles.tableScroll}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Level</th>
+                    <th>Avg Score</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {students.map((s) => (
+                    <tr key={s.student_id}>
+                      <td>
+                        <div className={styles.studentName}>
+                          <span className={`${styles.dot} ${dotClass[s.level] || ""}`} />
+                          {s.name}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`${styles.tag} ${tagClass[s.level] || ""}`}>
+                          {levelKey[s.level] || s.level}
+                        </span>
+                      </td>
+                      <td>{s.avg_score != null ? `${Math.round(s.avg_score * 100)}%` : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className={styles.reco}>
             <h3>Next Session Recommendation</h3>
@@ -181,12 +250,12 @@ export default function DashboardPage() {
             <button className={styles.chip} onClick={handleGenerateRecommendation} disabled={loadingReco}>
               {loadingReco ? "Generating…" : "Generate recommendation"}
             </button>
-            {generatedBy && generatedBy !== "unavailable" && (
+            {recoGeneratedBy && recoGeneratedBy !== "unavailable" && (
               <span style={{ fontSize: 10, opacity: 0.8, marginLeft: 8 }}>
-                generated by: {generatedBy}
+                generated by: {recoGeneratedBy}
               </span>
             )}
-            {generatedBy === "unavailable" && (
+            {recoGeneratedBy === "unavailable" && (
               <span style={{ fontSize: 10, opacity: 0.8, marginLeft: 8 }}>
                 backend unreachable — showing cached text
               </span>
