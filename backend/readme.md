@@ -1,13 +1,15 @@
-
 # Saarthi Backend
 
-FastAPI backend for Saarthi — class analysis, lesson generation, sessions, and progress tracking.
+FastAPI backend for Saarthi — class analysis, differentiated lesson
+generation, sessions, assessments, and next-session recommendations.
 
 ## Stack
 
 - FastAPI + Pydantic
-- SQLAlchemy + Alembic (Postgres)
-- SentenceTransformers + FAISS (RAG, added in later phases)
+- SQLAlchemy + Alembic — defaults to a local SQLite file for zero-setup
+  demos; point `DATABASE_URL` at Postgres for anything beyond that
+- Anthropic Claude for lesson/recommendation generation, with an
+  automatic offline template fallback when no API key is configured
 
 ## Setup
 
@@ -15,29 +17,22 @@ FastAPI backend for Saarthi — class analysis, lesson generation, sessions, and
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp ../.env.example ../.env  # fill in DATABASE_URL, LLM_API_KEY, etc.
 ```
+
+No `.env` file is required to run the demo — it defaults to SQLite and
+falls back to template-based generation with no API key. Copy
+`../.env.example` to `../.env` and set `LLM_API_KEY` to switch lesson
+generation and recommendations over to real Claude calls.
 
 ## Database
 
-Run migrations before starting the API:
-
 ```bash
-alembic upgrade head
+alembic upgrade head        # creates the schema (saarthi_demo.db by default)
+python -m app.db.seed       # loads 1 class, 10 students, 1 completed session
 ```
 
-Load sample data (one class, 10 students, a fractions session):
-
-```bash
-psql $DATABASE_URL -f app/db/seed.sql
-```
-
-Create a new migration after changing models:
-
-```bash
-alembic revision --autogenerate -m "describe the change"
-alembic upgrade head
-```
+Re-running the seed script is safe — it skips itself if data already exists.
+Delete `saarthi_demo.db` to reset.
 
 ## Run
 
@@ -48,16 +43,28 @@ uvicorn app.main:app --reload
 API docs: `http://localhost:8000/docs`
 Health check: `http://localhost:8000/api/health`
 
+## Key endpoints
+
+- `GET  /api/classes/{id}/analysis` — live level classification from assessment data
+- `POST /api/sessions` — create a session
+- `POST /api/sessions/{id}/generate-lesson` — generate 3 differentiated activities (AI or template)
+- `POST /api/assessments` — record a student's response to an activity
+- `POST /api/sessions/{id}/recommendation` — next-session recommendation from current class analysis
+
+Every AI-backed response includes `"generated_by": "ai" | "template"` so
+it's always clear which mode produced it — useful to point out live in a
+demo.
+
 ## Structure
 
 ```
 app/
-├── api/        # route handlers
-├── ai/         # lesson generation, RAG, LLM calls
+├── api/        # route handlers (classes, sessions, assessments, health)
+├── ai/         # lesson_generator.py, recommender.py — dual-mode AI/template
 ├── models/     # SQLAlchemy models
 ├── schemas/    # Pydantic request/response schemas
-├── services/   # business logic (class analysis, etc.)
-├── db/         # session setup + seed.sql
+├── services/   # class_analysis.py — level classification logic
+├── db/         # session setup + seed.py
 └── core/       # config, settings
 alembic/        # migrations
 ```
