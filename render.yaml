@@ -1,0 +1,25 @@
+# Render Blueprint for the backend. The database lives on Neon (free Postgres that does not
+# expire), and the frontend on Vercel. See DEPLOY.md.
+services:
+  - type: web
+    name: saarthi-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile.prod
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL        # Neon connection string
+        sync: false
+      - key: CORS_ORIGINS        # your Vercel URL, e.g. https://saarthi.vercel.app
+        sync: false
+      - key: ACCESS_CODE
+        sync: false
+      - key: LLM_API_KEY         # optional; leave empty to run on templates
+        sync: false
+      - key: LLM_MODEL
+        value: claude-sonnet-5-5
+      - key: AI_RATE_LIMIT_PER_MINUTE
+        value: "10"
+      - key: SEED_ON_START       # synthetic demo data only
+        value: "true"

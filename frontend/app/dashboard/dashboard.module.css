@@ -1,0 +1,415 @@
+.page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--paper);
+  font-family: var(--font-body);
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--ink);
+  color: white;
+  padding: 32px 24px;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.logo span {
+  color: var(--marigold);
+}
+
+.tagline {
+  font-size: 11px;
+  color: #a9a4c4;
+  margin-bottom: 40px;
+}
+
+.navItem {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #c9c5e0;
+  cursor: pointer;
+}
+
+.navItemActive {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 20px 48px;
+}
+
+@media (min-width: 640px) {
+  .main {
+    padding: 32px 36px 56px;
+  }
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.greetingH1 {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 3vw, 24px);
+  font-weight: 700;
+  margin: 0;
+}
+
+.greetingP {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--periwinkle);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.gridTop {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 760px) {
+  .gridTop {
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.cardLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.sessionTopic {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sessionMeta {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.badgeProgress {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #e9edfc;
+  color: var(--periwinkle);
+}
+
+.progressBar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 8px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  width: 70%;
+  background: var(--periwinkle);
+  border-radius: 8px;
+}
+
+.statNum {
+  font-size: 32px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.statMarigold {
+  color: var(--marigold);
+}
+
+.statMint {
+  color: var(--mint);
+}
+
+.levelsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (min-width: 520px) {
+  .levelsRow {
+    flex-direction: row;
+  }
+}
+
+.levelPill {
+  flex: 1;
+  text-align: center;
+  border-radius: 12px;
+  padding: 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.levelPill .n {
+  font-size: 19px;
+  font-weight: 800;
+  display: block;
+}
+
+.levelStruggling {
+  background: #fdece3;
+  color: #e0703c;
+}
+
+.levelOnTrack {
+  background: #e9edfc;
+  color: var(--periwinkle);
+}
+
+.levelAdvanced {
+  background: #e4f6f1;
+  color: var(--mint);
+}
+
+.gridBottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+@media (min-width: 860px) {
+  .gridBottom {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.table td {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.studentName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotStruggling {
+  background: #e0703c;
+}
+
+.dotOnTrack {
+  background: var(--periwinkle);
+}
+
+.dotAdvanced {
+  background: var(--mint);
+}
+
+.tag {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tagStruggling {
+  background: #fdece3;
+  color: #e0703c;
+}
+
+.tagOnTrack {
+  background: #e9edfc;
+  color: var(--periwinkle);
+}
+
+.tagAdvanced {
+  background: #e4f6f1;
+  color: var(--mint);
+}
+
+.reco {
+  background: linear-gradient(150deg, var(--periwinkle), #8c7ae6);
+  border-radius: 18px;
+  padding: 22px;
+  color: white;
+}
+
+.reco h3 {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.reco p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+
+.chip {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 6px;
+  border: none;
+  color: white;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 22px 0 12px;
+  color: var(--ink);
+}
+
+.activitiesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 760px) {
+  .activitiesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.activityCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.activityPrompt {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.genBadge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-top: 10px;
+  display: block;
+}
+
+.secondaryBtn {
+  background: var(--periwinkle);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tableScroll {
+  max-height: 340px;
+  overflow-y: auto;
+}

@@ -1,0 +1,11 @@
+student_code,alias,class_code,age,home_language,teacher_level,notes
+S01,Aarav,G5A,9,hi,struggling,SYNTHETIC; shy but tries
+S02,Vivaan,G5A,10,mr,struggling,SYNTHETIC; needs encouragement
+S03,Aditya,G5A,11,en,struggling,SYNTHETIC; confident with numbers
+S04,Vihaan,G5A,9,hi,on_track,SYNTHETIC; sometimes distracted
+S05,Arjun,G5A,10,mr,on_track,SYNTHETIC; asks good questions
+S06,Sai,G5A,11,en,on_track,SYNTHETIC; quiet worker
+S07,Reyansh,G5A,9,hi,on_track,SYNTHETIC; helps peers
+S08,Ayaan,G5A,10,mr,advanced,SYNTHETIC; needs extra time
+S09,Krishna,G5A,11,en,advanced,SYNTHETIC; improving steadily
+S10,Ishaan,G5A,9,hi,advanced,SYNTHETIC; eager to learn
