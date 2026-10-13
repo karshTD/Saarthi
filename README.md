@@ -329,7 +329,7 @@ Potential future iterations include:
 
 **Prototype / Active Development**
 
-Saarthi is being developed as a service-learning project in collaboration with an NGO focused on supporting and educating children in need.
+Saarthi is being developed as a service-learning project in collaboration with an NGO focused on supporting and educating children in need and helping the nation
 
 ---
 
